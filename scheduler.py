@@ -1,8 +1,8 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from generator import generate_response
+from generator import decorate_sentence
 import random
 
-def start_scheduler(client):
+def start_scheduler(client, markov):
     scheduler = AsyncIOScheduler()
 
     @scheduler.scheduled_job("interval", minutes=10)
@@ -11,7 +11,8 @@ def start_scheduler(client):
             for channel in guild.text_channels:
                 if channel.permissions_for(guild.me).send_messages:
                     if random.random() < 0.2:
-                        response = generate_response()
+                        sentence = markov.generate()
+                        response = decorate_sentence(sentence)
                         await channel.send(response)
                         break
 
